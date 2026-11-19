@@ -1,4 +1,4 @@
-
+from unittest.mock import patch
 import unittest
 
 from entidades.cliente import Cliente
@@ -11,7 +11,8 @@ from reservas.reserva import Reserva
 from excepciones.excepciones_personalizadas import (
     ClienteInvalidoError,
     ServicioInvalidoError,
-    EstadoReservaError
+    EstadoReservaError,
+    ProcesamientoReservaError
 )
 
 
@@ -115,6 +116,21 @@ class PruebasSistema(unittest.TestCase):
         with self.assertRaises(ServicioInvalidoError):
             Reserva("R003", self.cliente, "Servicio incorrecto")
 
+    def test_15_encadenamiento_excepciones(self):
+        self.reserva.confirmar()
+
+        with patch.object(
+            self.reserva,
+            "calcular_total",
+            side_effect=ValueError("Error simulado")
+        ):
+            with self.assertRaises(ProcesamientoReservaError) as contexto:
+                self.reserva.procesar()
+
+        self.assertIsInstance(
+            contexto.exception.__cause__,
+            ValueError
+        )
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
