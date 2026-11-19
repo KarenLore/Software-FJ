@@ -2,9 +2,7 @@
 
 ## Sistema Integral de Gestión de Clientes, Servicios y Reservas
 
-\<p align="center">
-&#x20; \<strong>Proyecto académico de Programación Orientada a Objetos en Python\</strong>
-\</p>
+**Proyecto académico de Programación Orientada a Objetos en Python**
 
 ---
 
@@ -92,7 +90,7 @@ Software-FJ/
 │   └── test_pruebas_sistema.py
 │
 ├── logs/
-│   └── .gitkeep
+│   └── sistema.log
 │
 ├── main.py
 ├── .gitignore
@@ -192,4 +190,6 @@ El desarrollo de Software FJ permitió aplicar los fundamentos de la programaci�
 
 ---
 
-\<p align="center">   \<strong>💻 SOFTWARE FJ\</strong>\<br>   \<em>Organización, tecnología y soluciones eficientes.\</em> \</p>
+## 💻 SOFTWARE FJ
+
+*Organización, tecnología y soluciones eficientes.*
