@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 class Servicio(ABC):
 
-    def _init_(self, identificador, nombre, descripcion, tarifa_base):
+    def __init__(self, identificador, nombre, descripcion, tarifa_base):
         if not identificador or not nombre:
             raise ValueError("El identificador y el nombre son obligatorios.")
 

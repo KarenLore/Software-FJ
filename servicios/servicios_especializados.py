@@ -1,15 +1,12 @@
+
 from servicios.servicio import Servicio
 
 
 class ReservaSala(Servicio):
 
-    def _init_(
-        self, identificador, nombre, descripcion,
-        tarifa_base, capacidad, horas
-    ):
-        super()._init_(
-            identificador, nombre, descripcion, tarifa_base
-        )
+    def __init__(self, identificador, nombre, descripcion,
+                 tarifa_base, capacidad, horas):
+        super().__init__(identificador, nombre, descripcion, tarifa_base)
 
         if capacidad <= 0 or horas <= 0:
             raise ValueError("La capacidad y las horas deben ser positivas.")
@@ -41,13 +38,9 @@ class ReservaSala(Servicio):
 
 class AlquilerEquipo(Servicio):
 
-    def _init_(
-        self, identificador, nombre, descripcion,
-        tarifa_base, cantidad, dias
-    ):
-        super()._init_(
-            identificador, nombre, descripcion, tarifa_base
-        )
+    def __init__(self, identificador, nombre, descripcion,
+                 tarifa_base, cantidad, dias):
+        super().__init__(identificador, nombre, descripcion, tarifa_base)
 
         if cantidad <= 0 or dias <= 0:
             raise ValueError("La cantidad y los días deben ser positivos.")
@@ -79,13 +72,9 @@ class AlquilerEquipo(Servicio):
 
 class Asesoria(Servicio):
 
-    def _init_(
-        self, identificador, nombre, descripcion,
-        tarifa_base, especialidad, horas
-    ):
-        super()._init_(
-            identificador, nombre, descripcion, tarifa_base
-        )
+    def __init__(self, identificador, nombre, descripcion,
+                 tarifa_base, especialidad, horas):
+        super().__init__(identificador, nombre, descripcion, tarifa_base)
 
         if horas <= 0:
             raise ValueError("Las horas deben ser mayores que cero.")
