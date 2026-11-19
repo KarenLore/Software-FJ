@@ -2,94 +2,127 @@
 Archivo principal del Sistema Integral de Gestión de Clientes,
 Servicios y Reservas de la empresa Software FJ.
 
-Este módulo permite interactuar con el sistema mediante un menú
-en consola, desde el cual se pueden registrar clientes, consultar
-servicios disponibles y crear y procesar reservas.
-
-Integra las clases desarrolladas en los módulos de entidades,
-servicios y reservas.
+Permite registrar clientes, consultar servicios disponibles
+y crear y procesar reservas mediante un menú interactivo.
 """
 
-# Importa la clase Cliente para registrar y administrar
-# la información de los clientes del sistema.
+# Importa os para limpiar la pantalla de la consola.
+import os
+
+# Importa la clase Cliente.
 from entidades.cliente import Cliente
 
-# Importa los diferentes tipos de servicios especializados
-# disponibles en la aplicación.
+# Importa las funciones para validar los datos del cliente.
+from entidades.validaciones import (
+    validar_texto,
+    validar_documento,
+    validar_correo,
+    validar_telefono
+)
+
+# Importa los servicios especializados disponibles.
 from servicios.servicios_especializados import (
     ReservaSala,
     AlquilerEquipo,
     Asesoria
 )
 
-# Importa la clase Reserva para crear, confirmar
-# y procesar las reservas realizadas por los clientes.
+# Importa la clase Reserva para gestionar las reservas.
 from reservas.reserva import Reserva
+
+
+def limpiar_consola():
+    """
+    Limpia la pantalla de la consola según el sistema operativo.
+    """
+
+    os.system("cls" if os.name == "nt" else "clear")
+
+
+def volver_al_menu():
+    """
+    Espera que el usuario presione 0 para regresar
+    al menú principal.
+    """
+
+    while True:
+        opcion = input(
+            "\nPresione 0 para volver al menú principal: "
+        )
+
+        if opcion == "0":
+            break
+
+        print("Opción no válida. Debe presionar 0.")
 
 
 def mostrar_menu():
     """
-    Presenta en pantalla el menú principal del sistema.
-
-    Muestra las opciones disponibles para que el usuario
-    pueda seleccionar la operación que desea realizar.
+    Presenta las opciones principales del sistema.
     """
 
-    # Imprime el encabezado principal del sistema.
-    print("\n" + "=" * 45)
+    print("\n" + "=" * 50)
     print("       SISTEMA INTEGRAL SOFTWARE FJ")
-    print("=" * 45)
-
-    # Muestra las opciones de funcionamiento.
+    print("=" * 50)
     print("1. Registrar cliente")
     print("2. Mostrar servicios")
     print("3. Crear y procesar reserva de ejemplo")
     print("4. Salir")
+    print("=" * 50)
 
 
 def ejecutar_sistema():
     """
     Controla el funcionamiento general del programa.
 
-    Mantiene activo el menú principal mediante un ciclo while,
-    recibe las opciones ingresadas por el usuario y ejecuta
-    las operaciones correspondientes.
-
-    También utiliza bloques try/except para controlar errores
-    de validación y otras excepciones durante la ejecución.
+    Permite registrar clientes, consultar servicios,
+    procesar reservas y controlar posibles excepciones.
     """
 
-    # Inicializa la variable cliente sin información.
-    # Se asignará un objeto Cliente cuando el usuario
-    # realice correctamente el registro.
+    # Variable que almacena el cliente registrado.
     cliente = None
 
-    # Mantiene el menú activo hasta que el usuario seleccione salir.
+    # Mantiene activo el menú hasta que el usuario decida salir.
     while True:
 
-        # Presenta las opciones disponibles.
+        limpiar_consola()
         mostrar_menu()
 
-        # Solicita al usuario la opción que desea ejecutar.
-        opcion = input("Seleccione una opción: ")
+        # Solicita la opción que desea ejecutar el usuario.
+        opcion = input("\nSeleccione una opción: ")
 
-        # Inicia el bloque de control de excepciones.
-        # Permite manejar errores sin finalizar inesperadamente
-        # la ejecución del programa.
-        try:
+        # =================================================
+        # OPCIÓN 1: REGISTRAR CLIENTE
+        # =================================================
 
-            # OPCIÓN 1: REGISTRAR CLIENTE
-            if opcion == "1":
+        if opcion == "1":
 
-                # Solicita los datos personales del cliente.
+            limpiar_consola()
+
+            print("=" * 50)
+            print("             REGISTRO DE CLIENTE")
+            print("=" * 50)
+
+            try:
+                # Solicita y valida el nombre del cliente.
                 nombre = input("Nombre del cliente: ")
-                documento = input("Documento: ")
-                correo = input("Correo electrónico: ")
-                telefono = input("Teléfono: ")
+                nombre = validar_texto(nombre, "nombre")
 
-                # Crea un objeto Cliente utilizando los datos ingresados.
-                # La clase Cliente realiza las validaciones correspondientes.
-                cliente = Cliente(
+                # Solicita y valida el documento.
+                documento = input("Documento: ")
+                documento = validar_documento(documento)
+
+                # Solicita y valida el correo electrónico.
+                correo = input("Correo electrónico: ")
+                correo = validar_correo(correo)
+
+                # Solicita y valida el teléfono.
+                telefono = input("Teléfono: ")
+                telefono = validar_telefono(telefono)
+
+                # Crea el cliente solamente cuando todos
+                # los datos han superado las validaciones.
+                cliente_nuevo = Cliente(
                     "CLI-001",
                     nombre,
                     documento,
@@ -97,118 +130,185 @@ def ejecutar_sistema():
                     telefono
                 )
 
-                # Informa que el registro se realizó correctamente.
-                print("\nCliente registrado correctamente.")
+                # Guarda el cliente registrado correctamente.
+                cliente = cliente_nuevo
 
-                # Muestra la información del cliente registrado.
+                print("\n¡Cliente registrado correctamente!")
+                print("-" * 50)
                 print(cliente)
+                print("-" * 50)
 
-            # OPCIÓN 2: MOSTRAR SERVICIOS
-            elif opcion == "2":
+            except ValueError as error:
 
-                # Crea una lista con los tres tipos de servicios
-                # especializados que ofrece la empresa Software FJ.
+                # Muestra el primer error de validación encontrado.
+                print("\n¡No fue posible registrar el cliente!")
+                print(f"Motivo: {error}")
+
+            except Exception as error:
+
+                # Captura otros errores inesperados.
+                print("\nSe presentó un error durante el registro.")
+                print(f"Detalle: {error}")
+
+            # Espera que el usuario decida regresar al menú.
+            volver_al_menu()
+
+        # =================================================
+        # OPCIÓN 2: MOSTRAR SERVICIOS
+        # =================================================
+
+        elif opcion == "2":
+
+            limpiar_consola()
+
+            try:
+                # Crea los tres servicios especializados.
                 servicios = [
-
-                    # Servicio de reserva de salas.
                     ReservaSala(
-                        "SER-001", "Reserva de sala",
-                        "Sala de reuniones", 50000, 10, 2
+                        "SER-001",
+                        "Reserva de sala",
+                        "Sala de reuniones",
+                        50000,
+                        10,
+                        2
                     ),
 
-                    # Servicio de alquiler de equipos tecnológicos.
                     AlquilerEquipo(
-                        "SER-002", "Alquiler de equipos",
-                        "Equipos tecnológicos", 30000, 2, 3
+                        "SER-002",
+                        "Alquiler de equipos",
+                        "Equipos tecnológicos",
+                        30000,
+                        2,
+                        3
                     ),
 
-                    # Servicio de asesoría tecnológica.
                     Asesoria(
-                        "SER-003", "Asesoría tecnológica",
-                        "Asesoría especializada", 80000,
-                        "Tecnología", 2
+                        "SER-003",
+                        "Asesoría tecnológica",
+                        "Asesoría especializada",
+                        80000,
+                        "Tecnología",
+                        2
                     )
                 ]
 
-                # Presenta el encabezado de los servicios disponibles.
-                print("\nSERVICIOS DISPONIBLES")
+                print("=" * 50)
+                print("             SERVICIOS DISPONIBLES")
+                print("=" * 50)
 
-                # Recorre la lista y muestra el nombre y costo
-                # calculado de cada servicio.
+                # Recorre la lista y muestra la información
+                # y el costo calculado de cada servicio.
                 for servicio in servicios:
+
+                    print(f"\nServicio: {servicio.nombre}")
+                    print(f"Descripción: {servicio.descripcion}")
+
                     print(
-                        f"{servicio.nombre} - "
                         f"Costo: ${servicio.calcular_costo():,.2f}"
                     )
 
-            # OPCIÓN 3: CREAR Y PROCESAR UNA RESERVA
-            elif opcion == "3":
+                    print("-" * 50)
 
+            except Exception as error:
+
+                # Informa si ocurre algún problema al mostrar servicios.
+                print("\nNo fue posible mostrar los servicios.")
+                print(f"Detalle: {error}")
+
+            volver_al_menu()
+
+        # =================================================
+        # OPCIÓN 3: CREAR Y PROCESAR RESERVA
+        # =================================================
+
+        elif opcion == "3":
+
+            limpiar_consola()
+
+            print("=" * 50)
+            print("          PROCESAMIENTO DE RESERVA")
+            print("=" * 50)
+
+            try:
                 # Verifica que exista un cliente registrado.
-                # Si no existe, informa al usuario y vuelve al menú.
                 if cliente is None:
-                    print("Primero debe registrar un cliente.")
-                    continue
 
-                # Crea un servicio de reserva de sala
-                # que será utilizado para el ejemplo.
-                servicio = ReservaSala(
-                    "SER-001", "Reserva de sala",
-                    "Sala de reuniones", 50000, 10, 2
-                )
+                    print("\nPrimero debe registrar un cliente.")
 
-                # Crea una reserva asociando el cliente registrado
-                # con el servicio seleccionado.
-                reserva = Reserva("RES-001", cliente, servicio)
+                else:
+                    # Crea el servicio que se utilizará
+                    # para realizar la reserva de ejemplo.
+                    servicio = ReservaSala(
+                        "SER-001",
+                        "Reserva de sala",
+                        "Sala de reuniones",
+                        50000,
+                        10,
+                        2
+                    )
 
-                # Cambia el estado de la reserva a Confirmada.
-                reserva.confirmar()
+                    # Crea la reserva relacionando el cliente
+                    # registrado con el servicio seleccionado.
+                    reserva = Reserva(
+                        "RES-001",
+                        cliente,
+                        servicio
+                    )
 
-                # Procesa la reserva y obtiene el valor total a pagar.
-                total = reserva.procesar()
+                    # Confirma la reserva antes de procesarla.
+                    reserva.confirmar()
 
-                # Informa que el procesamiento fue exitoso.
-                print("\nReserva procesada correctamente.")
+                    # Procesa la reserva y calcula el valor total.
+                    total = reserva.procesar()
 
-                # Muestra los datos de la reserva.
-                print(reserva)
+                    print("\n¡Reserva procesada correctamente!")
+                    print("-" * 50)
+                    print(reserva)
+                    print(f"\nTotal a pagar: ${total:,.2f}")
+                    print("-" * 50)
 
-                # Presenta el valor total calculado.
-                print(f"Total a pagar: ${total:,.2f}")
+            except ValueError as error:
 
-            # OPCIÓN 4: SALIR DEL SISTEMA
-            elif opcion == "4":
+                # Controla errores relacionados con valores.
+                print("\nError de validación:")
+                print(error)
 
-                # Muestra el mensaje de despedida.
-                print("Gracias por utilizar Software FJ.")
+            except Exception as error:
 
-                # Finaliza el ciclo y termina el menú.
-                break
+                # Controla otros errores durante el procesamiento.
+                print("\nSe presentó un error al procesar la reserva.")
+                print(f"Detalle: {error}")
 
-            # CONTROL DE OPCIONES NO VÁLIDAS
-            else:
+            volver_al_menu()
 
-                # Informa cuando el usuario ingresa
-                # una opción que no está disponible.
-                print("Opción no válida. Intente nuevamente.")
+        # =================================================
+        # OPCIÓN 4: SALIR DEL SISTEMA
+        # =================================================
 
-        # Captura errores relacionados con valores y validaciones.
-        except ValueError as error:
-            print(f"Error de validación: {error}")
+        elif opcion == "4":
 
-        # Captura otras excepciones que puedan presentarse
-        # durante la ejecución de las operaciones.
-        except Exception as error:
-            print(f"Se presentó un error: {error}")
+            limpiar_consola()
+
+            print("=" * 50)
+            print(" ¡Gracias por utilizar Software FJ!")
+            print("=" * 50)
+
+            break
+
+        # =================================================
+        # OPCIÓN NO VÁLIDA
+        # =================================================
+
+        else:
+
+            print("\nOpción no válida. Intente nuevamente.")
+            volver_al_menu()
 
 
 # ============================================================
 # PUNTO DE ENTRADA DEL PROGRAMA
 # ============================================================
 
-# Comprueba si este archivo se está ejecutando directamente.
-# Si es así, inicia el sistema llamando a ejecutar_sistema().
-# Esto permite importar sus funciones desde otros módulos
-# sin iniciar automáticamente el menú.
+# Ejecuta el sistema cuando el archivo se inicia directamente.
 if __name__ == "__main__":
     ejecutar_sistema()
